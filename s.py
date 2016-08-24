@@ -455,4 +455,3 @@ rps: Syntax: rps *move* ```""")
             gameoflife = False
 
 
-client.run('MjE3MTg3NTkyOTg1MjQ3NzQ0.Cp19pw.QnIZwsRTFjbxza61YZjxqs8Z8Cw')
