@@ -166,6 +166,8 @@ rps: Syntax: rps *move* ```""")
                 with io.StringIO() as buf, redirect_stdout(buf):
                     msg = eval(message.content.split(sep, 1)[-1].replace('`', ''))
                     output = buf.getvalue()
+                if '<>' in output:
+                    raise Exception("You might be trying to break the system, please don't")
                 await client.send_message(message.channel, output)
                 cooldown[str(message.channel)] = 4
             else:
@@ -282,6 +284,49 @@ rps: Syntax: rps *move* ```""")
             await client.send_message(message.channel, "You cannot make the bot do commands.")
         else:
             await client.send_message(message.channel, say)
+
+    elif message.content.startswith('<> animadv') and not is_animating and not gameoflife:
+        sep = 'animadv'
+        progress = 0
+        anim = message.content.split(sep, 1)[-1]
+        try:
+            loops = int(anim[0])
+            anim = anim[1:]
+        except ValueError:
+            loops = 1
+        if loops > 5:
+            await client.send_message(message.channel, 'Too many loops')
+        elif len(message.content.split()) > 20:
+            await client.send_message(message.channel, 'Too many frames')
+        else:
+            cooldown[str(message.channel)] = 8
+            anim = anim.split('//')
+            anim.pop(0)
+            is_animating = True
+            if loops == 1 and len(anim) <= 9:
+                msg = await client.send_message(message.channel, anim[0])
+                for i in anim:
+                    await client.edit_message(msg, i)
+                    time.sleep(0.1)
+            else:
+                loopview = loops
+                msg = await client.send_message(message.channel, '{} {:>32}{}{}] {} loops'.format(anim[0], '[', '▓', len(anim) * '░', loopview))
+                is_animating = True
+                for x in range(loops):
+                    for i in anim:
+                        progress += 1
+                        await client.edit_message(msg, "{} {:>32}{}{}] {} loops".format(i, '[', progress * '▓', (len(anim) - progress) * '░', loopview))
+                        time.sleep(1)
+                    loopview -= 1
+                    if loops == 1:
+                        for i in anim:
+                            progress += 1
+                            await client.edit_message(msg, "{} {:>32}{}{}] {} loop".format(i, '[', progress * '▓', (len(anim) - progress) * '░', loopview))
+                            time.sleep(1)
+                    progress = 0
+            loopview = 0
+            await client.edit_message(msg, 'Animation Finished')
+            is_animating = False
 
     elif message.content.startswith('<> anim') and not is_animating and not gameoflife:
         sep = 'anim'
@@ -453,5 +498,3 @@ rps: Syntax: rps *move* ```""")
                 exec('board.append(line{})'.format(x))
             await client.delete_message(msg)
             gameoflife = False
-
-
