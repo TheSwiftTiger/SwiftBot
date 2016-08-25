@@ -27,7 +27,7 @@ sys.setrecursionlimit(120)
 
 gameoflife = False
 
-empty = '░'
+empty = ' '
 cell = '▓'
 
 line_template = [empty for x in range(10)]
@@ -448,12 +448,12 @@ rps: Syntax: rps *move* ```""")
                     pass
             for x, y in zip(xlist, ylist):
                 board[y][x] = cell
-            formatted = ''
+            formatted = '```fix\n'
 
             for i in board:
-                formatted = formatted + str(i).replace('[', '').replace(' ', '').replace(',', '').replace(']', '').replace('\'', ' ') + '\n'
+                formatted = formatted + ''.join(i) + '\n'
 
-            msg = await client.send_message(message.channel, '---\n' + formatted)
+            msg = await client.send_message(message.channel, '---\n' + formatted + '\n```')
 
             while frame < frames:
                 resetNBoard()
@@ -469,23 +469,23 @@ rps: Syntax: rps *move* ```""")
                 for c_y, lst in enumerate(board):
                     for c_x, state in enumerate(lst):
                         if n_board[c_y][c_x] < 2 and board[c_y][c_x] == '▓':
-                            board[c_y][c_x] = '░'
+                            board[c_y][c_x] = ' '
                         elif n_board[c_y][c_x] > 3 and board[c_y][c_x] == '▓':
-                            board[c_y][c_x] = '░'
-                        elif n_board[c_y][c_x] == 3 and board[c_y][c_x] == '░':
+                            board[c_y][c_x] = ' '
+                        elif n_board[c_y][c_x] == 3 and board[c_y][c_x] == ' ':
                             board[c_y][c_x] = '▓'
                         else:
                             pass
-                formatted = ''
+                formatted = '```fix\n'
 
                 for i in board:
-                    formatted = formatted + str(i).replace('[', '').replace(' ', '').replace(',', '').replace(']', '').replace('"', '').replace('\'', ' ') + '\n'
+                    formatted = formatted + ''.join(i) + '\n'
 
-                await client.edit_message(msg, '---\n{}\n[{}{}] {}/{}'.format(formatted, '▓' * frame, '░' * (frames - frame), frame, frames))
+                await client.edit_message(msg, '---\n{}\n```\n```fix\n{}{}\n``` {}/{}'.format(formatted, '▓' * frame, ' ' * (frames - frame), frame, frames))
 
                 frame += 1
                 time.sleep(1)
-            empty = '░'
+            empty = ' '
             cell = '▓'
             line_template = [empty for x in range(10)]
             nboard_template = [0 for x in range(10)]
